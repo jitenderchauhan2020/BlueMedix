@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
-
+const bcrypt = require('bcrypt');
 exports.createUser = async(req, res)=>{
     try{
         const {name, email, password, role} = req.body;
@@ -10,7 +10,15 @@ exports.createUser = async(req, res)=>{
             })
         }
 
-        const user =await User.create({name, email, password, role});
+        const hashedPassword = await bcrypt.hash(password, 10);
+            // try {
+            //     hashedPassword = await bcrypt.hash(password, 10);
+            //     console.log(hashedPassword);
+            // } catch (error) {
+            //     console.log("cant able to hashed");
+            // }
+
+        const user =await User.create({name, email, password : hashedPassword, role});
         res.status(200).json({
             success : true,
             message : "Entry created successfully",
